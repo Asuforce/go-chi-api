@@ -32,15 +32,16 @@ func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, users)
 }
 
+type AuthInfo struct {
+	Authorization string `json:"authorization"`
+}
+
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	token := r.URL.Query().Get("token")
 	if token != "token" {
 		RespondError(w, http.StatusUnauthorized, fmt.Errorf("Invalid token"))
 		return
 	}
-	type json struct {
-		Message string `json:message`
-	}
-	res := json{Message: "auth ok"}
+	res := AuthInfo{Authorization: "admin"}
 	respondJSON(w, http.StatusOK, res)
 }
