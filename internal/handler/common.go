@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -13,15 +12,6 @@ import (
 type Handler struct{}
 
 func NewHandler() *Handler { return &Handler{} }
-
-type HTTPError struct {
-	Code    int
-	Message string
-}
-
-func (he *HTTPError) Error() string {
-	return fmt.Sprintf("code=%d, message=%v", he.Code, he.Message)
-}
 
 func (h *Handler) Show(w http.ResponseWriter, r *http.Request) {
 	type json struct {
@@ -48,7 +38,7 @@ func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	token := r.URL.Query().Get("token")
 	if token != "token" {
-		respondError(w, http.StatusUnauthorized, fmt.Errorf("Invalid token"))
+		RespondError(w, http.StatusUnauthorized, fmt.Errorf("Invalid token"))
 		return
 	}
 	type json struct {
@@ -67,17 +57,4 @@ func respondJSON(w http.ResponseWriter, status int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	w.Write([]byte(response))
-}
-
-func respondError(w http.ResponseWriter, code int, err error) {
-	log.Printf("err: %v", err)
-	if e, ok := err.(*HTTPError); ok {
-		respondJSON(w, e.Code, e)
-	} else if err != nil {
-		he := HTTPError{
-			Code:    code,
-			Message: err.Error(),
-		}
-		respondJSON(w, code, he)
-	}
 }
