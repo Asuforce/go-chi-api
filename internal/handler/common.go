@@ -12,21 +12,19 @@ type Handler struct{}
 
 func NewHandler() *Handler { return &Handler{} }
 
+type User struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
 func (h *Handler) Show(w http.ResponseWriter, r *http.Request) {
-	type json struct {
-		ID   int    `json:"id"`
-		Name string `json:"name"`
-	}
 	id, _ := strconv.Atoi(chi.URLParam(r, "id"))
-	res := json{ID: id, Name: fmt.Sprint("name_", id)}
+	res := User{ID: id, Name: fmt.Sprint("name_", id)}
 	respondJSON(w, http.StatusOK, res)
 }
 
 func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
-	users := []struct {
-		ID   int    `json:"id"`
-		User string `json:"user"`
-	}{
+	users := []User{
 		{1, "hoge"},
 		{2, "fuga"},
 		{3, "piyo"},
