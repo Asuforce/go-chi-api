@@ -33,7 +33,7 @@ func (s *Server) Middleware() {
 func (s *Server) Router() {
 	h := handler.NewHandler()
 	s.router.Route("/api", func(api chi.Router) {
-		api.Use(handler.Auth("db connection"))
+		api.Use(Auth("db connection"))
 		api.Route("/members", func(members chi.Router) {
 			members.Get("/{id}", h.Show)
 			members.Get("/", h.List)

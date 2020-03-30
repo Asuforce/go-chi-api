@@ -58,18 +58,6 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, res)
 }
 
-func Auth(db string) (fn func(http.Handler) http.Handler) {
-	fn = func(h http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			token := r.Header.Get("Authorization")
-			if token != "admin" {
-				respondError(w, http.StatusUnauthorized, fmt.Errorf("Authorization Forbidden"))
-			}
-		})
-	}
-	return
-}
-
 func respondJSON(w http.ResponseWriter, status int, payload interface{}) {
 	response, err := json.MarshalIndent(payload, "", "   ")
 	if err != nil {
