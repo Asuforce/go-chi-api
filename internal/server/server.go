@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/Asuforce/go-chi-api/internal/handler"
+	h "github.com/Asuforce/go-chi-api/internal/handler"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 )
@@ -31,12 +31,12 @@ func (s *Server) Middleware() {
 }
 
 func (s *Server) Router() {
-	h := handler.NewHandler()
+	c := h.NewController()
 	s.router.Route("/api", func(api chi.Router) {
 		api.Use(Auth("db connection"))
 		api.Route("/members", func(members chi.Router) {
-			members.Get("/{id}", h.Show)
-			members.Get("/", h.List)
+			members.Get("/{id}", h.Handler(c.Show).ServeHTTP)
+			members.Get("/", h.Handler(c.List).ServeHTTP)
 		})
 	})
 }

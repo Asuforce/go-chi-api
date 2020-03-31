@@ -8,40 +8,39 @@ import (
 	"github.com/go-chi/chi"
 )
 
-type Handler struct{}
+type Controller struct{}
 
-func NewHandler() *Handler { return &Handler{} }
+func NewController() *Controller { return &Controller{} }
 
 type User struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
-func (h *Handler) Show(w http.ResponseWriter, r *http.Request) {
+func (h *Controller) Show(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
 	id, _ := strconv.Atoi(chi.URLParam(r, "id"))
 	res := User{ID: id, Name: fmt.Sprint("name_", id)}
-	respondJSON(w, http.StatusOK, res)
+	return http.StatusOK, res, nil
 }
 
-func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
+func (h *Controller) List(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
 	users := []User{
 		{1, "hoge"},
 		{2, "fuga"},
 		{3, "piyo"},
 	}
-	respondJSON(w, http.StatusOK, users)
+	return http.StatusOK, users, nil
 }
 
 type AuthInfo struct {
 	Authorization string `json:"authorization"`
 }
 
-func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
+func (h *Controller) Login(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
 	token := r.URL.Query().Get("token")
 	if token != "token" {
-		RespondError(w, http.StatusUnauthorized, fmt.Errorf("Invalid token"))
-		return
+		return http.StatusUnauthorized, nil, fmt.Errorf("Invalid token")
 	}
 	res := AuthInfo{Authorization: "admin"}
-	respondJSON(w, http.StatusOK, res)
+	return http.StatusOK, res, nil
 }
